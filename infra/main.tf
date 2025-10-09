@@ -1,7 +1,28 @@
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 5.40"
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = "~> 5.40"
+    }
+  }
+}
+
+# Providers
 provider "google" {
   project = var.project_id
   region  = var.region
 }
+
+provider "google-beta" {
+  project = var.project_id
+  region  = var.region
+}
+
+# GKE 
 
 resource "google_container_cluster" "primary" {
   name     = "devops-cluster"
@@ -16,22 +37,12 @@ resource "google_container_cluster" "primary" {
   enable_autopilot = false
 }
 
+
+# Artifact Registry 
+
 resource "google_artifact_registry_repository" "docker_repo" {
   provider      = google
   location      = var.region
   repository_id = "demo-nodejs-repo"
   format        = "DOCKER"
-}
-
-resource "google_cloudbuild_trigger" "github_trigger" {
-  name        = "nodejs-cloudbuild-trigger"
-  description = "Trigger for Node.js app from GitHub"
-  github {
-    owner = var.github_owner
-    name  = var.github_repo
-    push {
-      branch = "main"
-    }
-  }
-  filename = "cloudbuild.yaml"
 }

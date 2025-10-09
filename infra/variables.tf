@@ -24,3 +24,4 @@ variable "github_repo" {
   type        = string
   description = "GitHub repository name"
 }
+
