@@ -1,0 +1,30 @@
+steps:
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install']
+
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'test']
+
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'lint']
+
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'coverage']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/demo-devops-nodejs', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/demo-devops-nodejs']
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'apply'
+      - '-f'
+      - 'k8s/'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=devops-cluster'
+
+images:
+  - 'gcr.io/$PROJECT_ID/demo-devops-nodejs'
