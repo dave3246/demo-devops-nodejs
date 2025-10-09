@@ -1,17 +1,20 @@
-import sequelize from './shared/database/database.js'
-import { usersRouter } from "./users/router.js"
-import express from 'express'
 
-const app = express()
-const PORT = 8000
+import sequelize from './shared/database/database.js';
+import { usersRouter } from './users/router.js';
+import express from 'express';
 
-sequelize.sync({ force: true }).then(() => console.log('db is ready'))
+const app = express();
+const PORT = 8000;
 
-app.use(express.json())
-app.use('/api/users', usersRouter)
+sequelize.sync({ force: true }).then(() => console.log('db is ready'));
 
-const server = app.listen(PORT, () => {
-    console.log('Server running on port PORT', PORT)
-})
+app.use(express.json());
+app.use('/api/users', usersRouter);
 
-export { app, server }
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log('Server running on port', PORT);
+  });
+}
+
+export { app };
