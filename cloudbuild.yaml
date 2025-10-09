@@ -4,6 +4,7 @@ steps:
 
   - name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'test']
+    env:
       - 'NODE_ENV=test'
 
   - name: 'gcr.io/cloud-builders/npm'
