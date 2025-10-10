@@ -1,4 +1,4 @@
-import { app, server } from '.'
+import { app } from '.'
 import request from 'supertest'
 import User from './users/model.js'
 import sequelize from './shared/database/database'
@@ -29,10 +29,6 @@ describe('User', () => {
     afterEach(async () => {
         jest.clearAllMocks()
         await mockedSequelize.close()
-    })
-
-    afterAll(async () => {
-        server.close()
     })
 
     test('Get users', async () => {
