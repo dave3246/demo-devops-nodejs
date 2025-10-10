@@ -15,6 +15,7 @@ spec:
       containers:
       - name: node-app
         image: gcr.io/devsu-devops-474617/demo-devops-nodejs:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
