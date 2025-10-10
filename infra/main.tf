@@ -46,3 +46,23 @@ resource "google_artifact_registry_repository" "docker_repo" {
   repository_id = "demo-nodejs-repo"
   format        = "DOCKER"
 }
+
+resource "kubernetes_service" "node_app_lb" {
+  metadata {
+    name      = "node-app-lb"
+    namespace = "default"
+  }
+
+  spec {
+    selector = {
+      app = "node-app"
+    }
+
+    port {
+      port        = 80
+      target_port = 8000
+    }
+
+    type = "LoadBalancer"
+  }
+}
