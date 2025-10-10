@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: node-app
-        image: gcr.io/YOUR_PROJECT_ID/demo-devops-nodejs
+        image: gcr.io/devsu-devops-474617/demo-devops-nodejs
         ports:
         - containerPort: 8000
         env:
