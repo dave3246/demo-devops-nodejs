@@ -147,6 +147,12 @@ Copyright © 2023 Devsu. All rights reserved.
 # ________________________
 
 
+## Public Repository
+
+This project is hosted in a public GitHub repository to ensure transparency and ease of access for reviewers and collaborators. All source code, infrastructure definitions, and documentation are available for inspection and testing.
+
+🔗 GitHub Repository: https://github.com/dave3246/demo-devops-nodejs
+
 ## Architecture
 
 - A GKE cluster for container orchestration.
