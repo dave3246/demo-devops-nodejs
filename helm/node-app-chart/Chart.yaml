@@ -1,6 +1,6 @@
 apiVersion: v2
 name: node-app
-description: A Helm chart for deploying a Node.js application
+description: Helm chart for Devsu Nodejs app
 type: application
 version: 0.1.0
 appVersion: "1.0"
