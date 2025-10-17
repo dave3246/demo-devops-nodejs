@@ -77,3 +77,21 @@ resource "google_artifact_registry_repository" "docker_repo" {
   repository_id = "demo-nodejs-repo"
   format        = "DOCKER"
 }
+
+#Filestore Instance for Persistent Volume
+
+resource "google_filestore_instance" "sqlite_instance" {
+  name       = "sqlite-instance"
+  zone       = "us-central1-c"
+  tier       = "STANDARD"
+  networks {
+    network = "default"
+    modes   = ["MODE_IPV4"]
+  }
+
+  file_shares {
+    name       = "vol1"
+    capacity_gb = 1024
+  }
+}
+

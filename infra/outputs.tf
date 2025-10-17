@@ -24,3 +24,8 @@ output "dns_record_ip" {
   value       = google_dns_record_set.urquilladev_a.rrdatas[0]
   description = "IP pública del Load Balancer"
 }
+
+output "filestore_ip" {
+  description = "IP address of the Filestore instance"
+  value       = google_filestore_instance.sqlite_instance.networks[0].ip_addresses[0]
+}

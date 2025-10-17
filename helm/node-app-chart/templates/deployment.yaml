@@ -20,9 +20,18 @@ spec:
             - containerPort: {{ .Values.service.targetPort }}
           env:
             {{- toYaml .Values.env | nindent 12 }}
+            - name: SQLITE_STORAGE_PATH
+              value: "/app/data/dev.mysqlite"
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: sqlite-storage
+              mountPath: /app/data
+      volumes:
+        - name: sqlite-storage
+          persistentVolumeClaim:
+            claimName: sqlite-pvc
