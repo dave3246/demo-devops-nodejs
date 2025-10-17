@@ -50,6 +50,7 @@ steps:
       - '-c'
       - |
         curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        cd helm
         helm upgrade --install node-app ./node-app-chart \
           --set image.tag=$SHORT_SHA \
           --namespace default \
