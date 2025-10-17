@@ -44,19 +44,16 @@ steps:
       - '--project=$PROJECT_ID'
 
   # 9. Instalar Helm y desplegar
-  
-  - name: 'ubuntu'
+  - name: 'gcr.io/cloud-builders/kubectl'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        apt-get update && apt-get install -y curl
         curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
         helm upgrade --install node-app ./node-app-chart \
           --set image.tag=$SHORT_SHA \
           --namespace default \
           --create-namespace
-
 
 images:
   - 'gcr.io/$PROJECT_ID/demo-devops-nodejs:$SHORT_SHA'
