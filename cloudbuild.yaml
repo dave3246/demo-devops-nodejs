@@ -1,37 +1,69 @@
 steps:
+  # 1. Instalar dependencias
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
 
+  # 2. Ejecutar pruebas
   - name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'test']
     env:
       - 'NODE_ENV=test'
 
+  # 3. Lint
   - name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'lint']
 
+  # 4. Coverage
   - name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'coverage']
 
+  # 5. Build de imagen Docker
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/demo-devops-nodejs', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/demo-devops-nodejs:$SHORT_SHA', '.']
 
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/demo-devops-nodejs']
-
-  - name: 'gcr.io/cloud-builders/kubectl'
+  # 6. Escaneo de vulnerabilidades con Trivy
+  - name: 'aquasec/trivy'
+    entrypoint: 'trivy'
     args:
-      - 'apply'
-      - '-f'
-      - 'k8s/'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=devops-cluster'
+      - 'image'
+      - '--severity=HIGH,CRITICAL'
+      - 'gcr.io/$PROJECT_ID/demo-devops-nodejs:$SHORT_SHA'
+
+  # 7. Push de imagen
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/demo-devops-nodejs:$SHORT_SHA']
+
+  # 8. Obtener credenciales del clúster GKE
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - 'devops-cluster'
+      - '--zone=us-central1-a'
+      - '--project=$PROJECT_ID'
+
+  # 9. Instalar Helm
+  - name: 'ubuntu'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+  # 10. Desplegar con Helm
+  - name: 'ubuntu'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        helm upgrade --install node-app ./node-app-chart \
+          --set image.tag=$SHORT_SHA \
+          --namespace default \
+          --create-namespace
 
 images:
-  - 'gcr.io/$PROJECT_ID/demo-devops-nodejs'
-
+  - 'gcr.io/$PROJECT_ID/demo-devops-nodejs:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
-

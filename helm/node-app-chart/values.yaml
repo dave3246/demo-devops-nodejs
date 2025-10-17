@@ -1,0 +1,72 @@
+replicaCount: 2
+
+image:
+  repository: gcr.io/devsu-devops-474617/demo-devops-nodejs
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: "gce"
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    networking.gke.io/managed-certificates: "urquilladev-ssl-cert"
+  hosts:
+    - host: urquilladev.xyz
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "250m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+readinessProbe:
+  httpGet:
+    path: /api/users
+    port: 8000
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+livenessProbe:
+  httpGet:
+    path: /api/users
+    port: 8000
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+env:
+  - name: DATABASE_NAME
+    value: "/app/data/dev.sqlite"
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: app-secret
+        key: DATABASE_USER
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: app-secret
+        key: DATABASE_PASSWORD
+
+secret:
+  enabled: true
+  name: app-secret
+  data:
+    DATABASE_USER: "user"
+    DATABASE_PASSWORD: "password"
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
